@@ -1,5 +1,5 @@
 function ig_del_copy_dir(fromdir,todir,avoid)
-%IG_DEL_COPY_DIR		- delete all files in "fromdir" directory except avoid, which is copied to directory "todir
+%IG_DEL_COPY_DIR		- delete all files in "fromdir" directory except "avoid", which is copied to directory "todir"
 %--------------------------------------------------------------------------------
 
 
