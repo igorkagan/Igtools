@@ -63,5 +63,5 @@ cx = 1/(6*A)*sum( (x(1:end-1) + x(2:end)).*(x(1:end-1).*y(2:end) - x(2:end).*y(1
 
 cy = 1/(6*A)*sum( (y(1:end-1) + y(2:end)).*(x(1:end-1).*y(2:end) - x(2:end).*y(1:end-1)) );
 
-if nargout < 2, cx = cx+i*xy; end
+if nargout < 2, cx = cx+i*cy; end
 
