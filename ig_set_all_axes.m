@@ -5,7 +5,7 @@ function ig_set_all_axes(ax,lim)
 axises = get(gcf,'Children');
 
 for k = 1:length(axises)
-	if ~strcmp(get(axises(k),'Tag'),'image') &&  ~strcmp(get(axises(k),'Type'),'uicontrol'),
+	if ~strcmp(get(axises(k),'Tag'),'image') &&  ~strcmp(get(axises(k),'Type'),'uicontrol') && ~strcmp(get(axises(k),'Type'),'uicontextmenu'),
 		set(axises(k),ax,lim);
 	end
 end
