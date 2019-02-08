@@ -7,7 +7,7 @@ function [e,h,v] = ig_vf(ledx_cm,ledy_cm,sx_minarc,sy_minarc,vd_cm)
 %		sy_minarc	- stimulus y (minarc, from LLC)
 %		vd_cm		- viewing distance (cm)
 %		---
-%		*LLC - Lower Left Corner of the monitor
+%		*LLC 		- Lower Left Corner of the monitor
 %		
 %		-or-
 %		h_deg 		- horizontal eccentricity (deg)
