@@ -15,5 +15,5 @@ m = mean(y);
 bar(x,m,varargin{:}); hold on
 h = errorbar(x,m,e,'Marker','none','Color',[0 0 0]);
 % hold on; plot(x,y,'o');
-errorbar_tick(h,0.1,'units');
+errorbar_tick(h,0.3,'units');
 	
