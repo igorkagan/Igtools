@@ -607,25 +607,73 @@ function jMainPane = getJMainPane(jEditor)
       % never mind - might be Matlab 6...
   end
 
+  
+% https://de.mathworks.com/matlabcentral/fileexchange/24615-editormacro-assign-a-macro-to-a-keyboard-key-stroke-in-the-matlab-editor-and-command-window?focused=5177605&tab=function  
 %% Get EditorPane
 function hEditorPane = getEditorPane(jDocPane)
-  try
-      % Matlab 7   TODO: good for ML 7.1-7.7: need to check other versions
-      jSyntaxTextPaneView = getDescendent(jDocPane,[0,0,1,0,0,0,0]);
-      if isa(jSyntaxTextPaneView,'com.mathworks.widgets.SyntaxTextPaneMultiView$1')
-          hEditorPane(1) = handle(getDescendent(jSyntaxTextPaneView.getComponent(1),[1,0,0]),'CallbackProperties');
-          hEditorPane(2) = handle(getDescendent(jSyntaxTextPaneView.getComponent(2),[1,0,0]),'CallbackProperties');
-      else
-          jEditorPane = getDescendent(jSyntaxTextPaneView,[1,0,0]);
-          hEditorPane = handle(jEditorPane,'CallbackProperties');
-      end
-  catch
-      % Matlab 6
-      hEditorPane = getDescendent(jDocPane,[0,0,0,0]);
-      if isa(hEditorPane,'com.mathworks.mwt.MWButton')  % edge case
-          hEditorPane = getDescendent(jDocPane,[0,1,0,0]);
-      end
-  end
+
+nVersion = sscanf(version,'%d.');
+if nVersion(1) == 6
+    % Matlab 6 (no tests done)
+    hEditorPane = getDescendent(jDocPane,[0,0,0,0]);
+    if isa(hEditorPane,'com.mathworks.mwt.MWButton') % edge case
+        hEditorPane = getDescendent(jDocPane,[0,1,0,0]);
+    end
+    
+elseif nVersion(1) == 7 || (nVersion(1)==8 && nVersion(2)<2)
+    try
+        % Matlab 7 (tested in R2010bSP1/7.11.1, R2012b/8.0; failed in
+        % R2006b/7.3, R2007b/7.5, R2008a/7.6, R2013b/8.2)
+        jSyntaxTextPaneView = getDescendent(jDocPane,[0,0,1,0,0,0,0]);
+        if isa(jSyntaxTextPaneView,'com.mathworks.widgets.SyntaxTextPaneMultiView$1')
+            hEditorPane(1) = handle(getDescendent(jSyntaxTextPaneView.getComponent(1),[1,0,0]),'CallbackProperties');
+            hEditorPane(2) = handle(getDescendent(jSyntaxTextPaneView.getComponent(2),[1,0,0]),'CallbackProperties');
+        else
+            jEditorPane = getDescendent(jSyntaxTextPaneView,[1,0,0]);
+            hEditorPane = handle(jEditorPane,'CallbackProperties');
+        end
+    catch ME
+        fprintf(2,'Correct implementation for EditorMacro:getEditorPane is missing!');
+        rethrow(ME);
+    end
+    
+else
+    try
+        % Matlab 8.3 and above (tested in R2014a/8.3, R2016a/9.0,
+        % R2016b/9.1, R2017b/9.3; failed in R2013b/8.2)
+        if isa(jDocPane,'com.mathworks.widgets.desk.DTDocumentTabs') % We picked the wrong document.
+            jDocPane=jDocPane.getParent.getComponent(1);
+        end
+        jSyntaxTextPaneView = getDescendent(jDocPane,[0,1,0,0,0,0,1,0,0]);
+        hEditorPane = handle(jSyntaxTextPaneView,'CallbackProperties');
+    catch ME
+        fprintf(2,'Correct implementation for EditorMacro:getEditorPane is missing!');
+        rethrow(ME);
+    end
+end
+
+
+%% Get EditorPane
+% function hEditorPane = getEditorPane(jDocPane)
+%   try
+%       % Matlab 7   TODO: good for ML 7.1-7.7: need to check other versions
+%       jSyntaxTextPaneView = getDescendent(jDocPane,[0,0,1,0,0,0,0]);
+%       if isa(jSyntaxTextPaneView,'com.mathworks.widgets.SyntaxTextPaneMultiView$1')
+%           hEditorPane(1) = handle(getDescendent(jSyntaxTextPaneView.getComponent(1),[1,0,0]),'CallbackProperties');
+%           hEditorPane(2) = handle(getDescendent(jSyntaxTextPaneView.getComponent(2),[1,0,0]),'CallbackProperties');
+%       else
+%           jEditorPane = getDescendent(jSyntaxTextPaneView,[1,0,0]);
+%           hEditorPane = handle(jEditorPane,'CallbackProperties');
+%       end
+%   catch
+%       % Matlab 6
+%       hEditorPane = getDescendent(jDocPane,[0,0,0,0]);
+%       if isa(hEditorPane,'com.mathworks.mwt.MWButton')  % edge case
+%           hEditorPane = getDescendent(jDocPane,[0,1,0,0]);
+%       end
+%   end
+
+
 
 %% Internal error processing
 function myError(id,msg)
