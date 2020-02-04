@@ -37,10 +37,15 @@ else
 	
 end
 
+
 % select only those idx_down that are preceeded by idx_up
 idx_up_m = [idx_up; ones(size(idx_up))];
 idx_down_m = [idx_down; -1*ones(size(idx_down))];
 idx_m = [idx_up_m idx_down_m];
+
+if isempty(idx_m),
+    return;
+end
 	
 [temp,i] = sort(idx_m(1,:));
 idx_m = idx_m(:,i); % re-sort by idx
