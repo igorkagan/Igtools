@@ -17,7 +17,7 @@ function out = ig_analyze_trial_sequence(varargin)
 %
 % REQUIRES:	Igtools
 %
-% See also TEST_TRIAL_SEQ_PROB
+% See also TESTSIM_TRIAL_SEQ_PROB (https://github.com/dagdpz/testsim)
 %
 %
 % Author(s):	I.Kagan, DAG, DPZ
