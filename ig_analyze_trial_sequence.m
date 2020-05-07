@@ -3,9 +3,9 @@ function out = ig_analyze_trial_sequence(varargin)
 %
 % USAGE:
 % ig_analyze_trial_sequence('seq',DAT,'condition_labels',{{'In_l' 'In_r' 'Ch_l' 'Ch_r' 'F L' 'F R' 'F'}},'group_conditions',{{[3 4]}});
-% IMPORTANT NOTE: cell inputs should be encapsulated in additional {}! (as above)
+% IMPORTANT NOTE: cell inputs should be encapsulated in additional curled brackets {}! (as above)
 % out = ig_analyze_trial_sequence('seq',seq,'condition_labels',{{'L' 'R'}});
-% ig_analyze_trial_sequence; % use built-in examples (see "examples")
+% ig_analyze_trial_sequence; % use built-in examples (see "Examples")
 %
 % INPUTS:
 %		inputs		- see defaults and examples
@@ -87,7 +87,7 @@ end
 
 n_runs = 1;
 
-if nargin < 1, % examples
+if nargin < 1, % Examples
 param.dataset_name		= 'test';	
 param.all_conditions		= [1 2 3 4 5 6];
 param.condition_labels		= {'one' 'two' 'three' 'four' 'five' 'six'};
@@ -98,15 +98,17 @@ param.combine_conditions	= {};
 param.combine_condition_names	= {};
 % param.combine_conditions	= {[4 5]};
 % param.combine_condition_names	= {'4 and 5'};
-param.conditions_compare_vs_LR	= [1 2 3]; % condtions to compare to preceeding/next L or R conditions
+param.conditions_compare_vs_LR	= [1 2 3]; % conditions to compare to preceeding/next L or R conditions
 param.group_LR			= {[1 3 5] [2 4 6]}; % two groups, one left and one right (can also include conditions_compare_vs_LR) 
 
 param.seq			= [2 1 3 4 5 6 1 2 2 3 4 5 6 1 3 4 1 2 2 3 4 2 6 2 1 2]; % 1 (L choice) is always preceeded by [2 4 6] (R)
 % param.seq			= [1 2 1 2 3 4 5 4 2 2 1 2 1 2 1 2 1 2 3 4 4 5 2 3 4 5 5 2 3 1 2 1 2 1 2 1 2 3 1 2 1 2 2 3 3 3 3 3 1 2 1 2 1 2 6 6]; % 1 is always followed by 2
 % param.seq			= [1 2 1 2 3 4 5 4 2 2 1 2 1 2 1 2 1 2 3 4 4 5 2 3 4 5 5 2 3 0 1 2 1 2 1 2 1 2 3 1 2 1 2 2 3 3 3 3 3 1 2 1 2 1 2 6 6]; % 1 is always followed by 2, two runs
+
 % param.seq			= [1 1 2 2 2 2 2 2 2 2 2 1 1 2 2 2 2 2 2 2 2 2 2];
 %	prob. of 1 preceeded by 1 = 0.66; prob. of 1 preceeded by 2 = 0.33; prob. of 2 preceeded by 1 = 0.1; prob. of 2 preceeded by 2 = 0.9;
 %	prob. of 1 followed by 1 = 0.5; prob. of 1 followed by 2 = 0.5; prob. of 2 followed by 1 = .06; prob. of 2 followed by 2 = 0.94;
+
 % param.seq = randi(6,10000,1);
 % param.seq = [randi(6,20,1)' 0 randi(6,15,1)']; % two runs, separated by "0"
 
@@ -128,7 +130,6 @@ end
 if min(all_conditions)~=1 || max(diff(all_conditions))~=1,
 	% error('conditions are not consecutive integer numbers, use ig_vector_to_consecutive_integers.m');
 	% TODO: convert conditions automatically so that min is 1 and they are consecutive integer numbers
-	
 	
 	
 end
@@ -193,7 +194,7 @@ subplot(n_rows,n_cols,[5 6])
 % difference
 plot(diff(seq),'ko-');
 xlabel('trial #');
-title('diff');
+title('sequence difference');
 set(gca,'Xlim',[0 length(seq)]);
 
 subplot(n_rows,n_cols,[7 8])
@@ -202,7 +203,7 @@ subplot(n_rows,n_cols,[7 8])
 stem(acorr_lags,acorr);
 set(gca,'Xlim',[acorr_lags(1) acorr_lags(end)]);
 xlabel('lag');
-title('autocorrelation');
+title('sequence autocorrelation');
 
 
 % Probability analysis
@@ -300,14 +301,14 @@ if ~isempty(conditions_compare_vs_LR),
 	subplot(n_rows,n_cols,11)
 	pcolor([[Ppc_LR nan(size(Ppc_LR,1),1)] ; nan(1,size(Ppc_LR,2)+1)]); set(gca,'Ydir','reverse','YTick',[1:n_conditions_compare_vs_LR]+0.5,'YTickLabel',condition_labels(conditions_compare_vs_LR),'XTick',[1 2]+0.5,'XTickLabel',{'L' 'R'}); 
 	caxis([0 1]); colorbar;
-	title(sprintf('P(preceding L/R|current) P=%s',mat2str(Ppc_LR_P,2)));
+	title(sprintf('P(preceding L/R|current) p(Binom)=%s',mat2str(Ppc_LR_P,2)));
 	xlabel('preceding L/R');
 	ylabel('current');
 
 	subplot(n_rows,n_cols,12)
 	pcolor([[Pnc_LR nan(size(Pnc_LR,1),1)] ; nan(1,size(Pnc_LR,2)+1)]); set(gca,'Ydir','reverse','YTick',[1:n_conditions_compare_vs_LR]+0.5,'YTickLabel',condition_labels(conditions_compare_vs_LR),'XTick',[1 2]+0.5,'XTickLabel',{'L' 'R'}); 
 	caxis([0 1]); colorbar;
-	title(sprintf('P(next L/R|current) P=%s',mat2str(Pnc_LR_P,2)));
+	title(sprintf('P(next L/R|current) p(Binom)=%s',mat2str(Pnc_LR_P,2)));
 	xlabel('next L/R');
 	ylabel('current');
 	
@@ -329,7 +330,7 @@ if ~isempty(group_conditions),
 			
 	
 	for g = 1:size(group_conditions,2), % for each group
-		conds = group_conditions{g}; % should be two conditions
+		conds = group_conditions{g}; % should be two conditions (e.g. L and R)
 		
 		c1c2 = seq(seq==conds(1) | seq==conds(2) | isnan(seq)); % including NaNs separating runs
 		c1c2_= seq(seq==conds(1) | seq==conds(2)); % without NaNs
@@ -402,14 +403,14 @@ if ~isempty(group_conditions),
 		subplot(n_rows,n_cols,17+2*(g-1))
 		pcolor([[Ppc_g nan(size(Ppc_g,1),1)] ; nan(1,size(Ppc_g,2)+1)]); set(gca,'Ydir','reverse','YTick',[1 2]+0.5,'YTickLabel',condition_labels(conds),'XTick',[1 2]+0.5,'XTickLabel',condition_labels(conds));
 		caxis([0 1]); colorbar;
-		title([group_condition_names(g) sprintf(' P(preceding|current) P=%.2f',Ppc_g_P)]);
+		title([group_condition_names(g) sprintf(' P(preceding|current) p(Fisher)=%.2f',Ppc_g_P)]);
 		xlabel('preceding');
 		ylabel('current');
 		
 		subplot(n_rows,n_cols,17+2*(g-1)+1)
 		pcolor([[Pnc_g nan(size(Pnc_g,1),1)] ; nan(1,size(Pnc_g,2)+1)]); set(gca,'Ydir','reverse','YTick',[1 2]+0.5,'YTickLabel',condition_labels(conds),'XTick',[1 2]+0.5,'XTickLabel',condition_labels(conds));
 		caxis([0 1]); colorbar;
-		title([group_condition_names(g) sprintf(' P(next|current) P=%.2f',Pnc_g_P)]);
+		title([group_condition_names(g) sprintf(' P(next|current) p(Fisher)=%.2f',Pnc_g_P)]);
 		xlabel('next');
 		ylabel('current');
 	end
