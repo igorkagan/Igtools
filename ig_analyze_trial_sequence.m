@@ -2,7 +2,7 @@ function out = ig_analyze_trial_sequence(varargin)
 %IG_ANALYZE_TRIAL_SEQUENCE		- analyze trial sequence
 %
 % USAGE:
-% ig_analyze_trial_sequence('seq',DAT,'condition_labels',{{'In_l' 'In_r' 'Ch_l' 'Ch_r' 'F L' 'F R' 'F'}},'group_conditions',{{[3 4]}});
+% ig_analyze_trial_sequence('seq',DAT,'condition_labels',{{'In_l' 'In_r' 'Ch_l' 'Ch_r'}},'group_conditions',{{[3 4]}});
 % IMPORTANT NOTE: cell inputs should be encapsulated in additional curled brackets {}! (as above)
 % out = ig_analyze_trial_sequence('seq',seq,'condition_labels',{{'L' 'R'}});
 % ig_analyze_trial_sequence; % use built-in examples (see "Examples")
@@ -25,8 +25,9 @@ function out = ig_analyze_trial_sequence(varargin)
 %
 % Change log:
 % 20170528:	Created function (Igor Kagan)
-% 
-% $Revision: 1.0 $  $Date: 2017-05-28 18:09:10 $
+% 20200518:	Stats, documentation revisions (IK)
+%
+% $Revision: 1.1 $  $Date: 2020-05-18 15:00:00 $
 %%%%%%%%%%%%%%%%%%%%%%%%%[DAG mfile header version 1]%%%%%%%%%%%%%%%%%%%%%%%%% 
 
 % defaults
@@ -40,6 +41,7 @@ param.combine_conditions	= {};
 param.combine_condition_names	= {};
 param.conditions_compare_vs_LR	= []; % conditions to compare to preceeding/next left/right conditions
 param.group_LR			= {}; % two groups, one left and one right (can also include conditions_compare_vs_LR) 
+
 
 
 if nargin == 1, % just sequence or struct
@@ -98,10 +100,11 @@ param.combine_conditions	= {};
 param.combine_condition_names	= {};
 % param.combine_conditions	= {[4 5]};
 % param.combine_condition_names	= {'4 and 5'};
-param.conditions_compare_vs_LR	= [1 2 3]; % conditions to compare to preceeding/next L or R conditions
+param.conditions_compare_vs_LR	= [1 2]; % conditions to compare to preceeding/next L or R conditions
 param.group_LR			= {[1 3 5] [2 4 6]}; % two groups, one left and one right (can also include conditions_compare_vs_LR) 
 
-param.seq			= [2 1 3 4 5 6 1 2 2 3 4 5 6 1 3 4 1 2 2 3 4 2 6 2 1 2]; % 1 (L choice) is always preceeded by [2 4 6] (R)
+param.seq			= [2 1 3 4 5 6 1 2 2 3 4 5 6 1 3 4 1 2 2 3 4 2 6 2 1 2  2 1 3 4 5 6 1 2 2 3 4 5 6 1 3 4 1 2 2 3 4 2 6 2 1 2]; % 1 (L choice) is always preceeded by [2 4 6] (R)
+% param.seq			= [1 2 3 4 5 6 1 2 2 3 4 5 6 1 4 4 1 6 2 3 4 2 6 2 1 2  2 1 4 4 5 6 1 2 2 3 4 5 6 1 6 4 1 2 1 2 3 1 4 2 6 2 1 2]; % 1 (L choice) is always followed by [2 4 6] (R)
 % param.seq			= [1 2 1 2 3 4 5 4 2 2 1 2 1 2 1 2 1 2 3 4 4 5 2 3 4 5 5 2 3 1 2 1 2 1 2 1 2 3 1 2 1 2 2 3 3 3 3 3 1 2 1 2 1 2 6 6]; % 1 is always followed by 2
 % param.seq			= [1 2 1 2 3 4 5 4 2 2 1 2 1 2 1 2 1 2 3 4 4 5 2 3 4 5 5 2 3 0 1 2 1 2 1 2 1 2 3 1 2 1 2 2 3 3 3 3 3 1 2 1 2 1 2 6 6]; % 1 is always followed by 2, two runs
 
@@ -237,14 +240,14 @@ Pnc(:,conditions2exclude) = NaN;
 
 
 subplot(n_rows,n_cols,9)
-pcolor([[Ppc nan(size(Ppc,1),1)] ; nan(1,size(Ppc,2)+1)]); set(gca,'Ydir','reverse','YTick',all_conditions+0.5,'YTickLabel',condition_labels,'XTick',all_conditions+0.5,'XTickLabel',condition_labels); 
+pcolor([[Ppc nan(size(Ppc,1),1)] ; nan(1,size(Ppc,2)+1)]); set(gca,'Ydir','reverse','YTick',all_conditions+0.5,'YTickLabel',condition_labels,'XTick',all_conditions+0.5,'XTickLabel',condition_labels, 'FontSize',8); 
 caxis([0 1]); colorbar;
 title('P(preceding|current)');
 xlabel('preceding');
 ylabel('current');
 
 subplot(n_rows,n_cols,10)
-pcolor([[Pnc nan(size(Pnc,1),1)] ; nan(1,size(Pnc,2)+1)]); set(gca,'Ydir','reverse','YTick',all_conditions+0.5,'YTickLabel',condition_labels,'XTick',all_conditions+0.5,'XTickLabel',condition_labels);
+pcolor([[Pnc nan(size(Pnc,1),1)] ; nan(1,size(Pnc,2)+1)]); set(gca,'Ydir','reverse','YTick',all_conditions+0.5,'YTickLabel',condition_labels,'XTick',all_conditions+0.5,'XTickLabel',condition_labels, 'FontSize',8);
 caxis([0 1]); colorbar;
 title('P(next|current)');
 xlabel('next');
@@ -301,14 +304,14 @@ if ~isempty(conditions_compare_vs_LR),
 	subplot(n_rows,n_cols,11)
 	pcolor([[Ppc_LR nan(size(Ppc_LR,1),1)] ; nan(1,size(Ppc_LR,2)+1)]); set(gca,'Ydir','reverse','YTick',[1:n_conditions_compare_vs_LR]+0.5,'YTickLabel',condition_labels(conditions_compare_vs_LR),'XTick',[1 2]+0.5,'XTickLabel',{'L' 'R'}); 
 	caxis([0 1]); colorbar;
-	title(sprintf('P(preceding L/R|current) p(Binom)=%s',mat2str(Ppc_LR_P,2)));
+	title(sprintf('P(preceding L/R|current) p_{Binom}=%s',mat2str(Ppc_LR_P,2)),'FontSize',9);
 	xlabel('preceding L/R');
 	ylabel('current');
 
 	subplot(n_rows,n_cols,12)
 	pcolor([[Pnc_LR nan(size(Pnc_LR,1),1)] ; nan(1,size(Pnc_LR,2)+1)]); set(gca,'Ydir','reverse','YTick',[1:n_conditions_compare_vs_LR]+0.5,'YTickLabel',condition_labels(conditions_compare_vs_LR),'XTick',[1 2]+0.5,'XTickLabel',{'L' 'R'}); 
 	caxis([0 1]); colorbar;
-	title(sprintf('P(next L/R|current) p(Binom)=%s',mat2str(Pnc_LR_P,2)));
+	title(sprintf('P(next L/R|current) p_{Binom}=%s',mat2str(Pnc_LR_P,2)),'FontSize',9);
 	xlabel('next L/R');
 	ylabel('current');
 	
@@ -358,9 +361,9 @@ if ~isempty(group_conditions),
 			end
 		end
 		
-		% run Fisher's exact test on significant difference from proportions due to choice bias
+		% run Fisher's exact test on significant difference from expected proportions due to choice bias
 		Ppc_g_P = fexact( [ zeros(1,Ppc_g(conds(1),conds(1))) ones(1,Ppc_g(conds(2),conds(1))) zeros(1,Ppc_g(conds(1),conds(2))) ones(1,Ppc_g(conds(2),conds(2)))]',...
-			[zeros(1,Ppc_g(conds(1),conds(1))+Ppc_g(conds(2),conds(1))) ones(1,Ppc_g(conds(1),conds(2))+Ppc_g(conds(2),conds(2))) ]' );
+                          [ zeros(1,Ppc_g(conds(1),conds(1))+Ppc_g(conds(2),conds(1))) ones(1,Ppc_g(conds(1),conds(2))+Ppc_g(conds(2),conds(2))) ]' );
 
 		
 		for c = conds
@@ -375,9 +378,9 @@ if ~isempty(group_conditions),
 			end
 		end
 		
-		% run Fisher's exact test on significant difference from proportions due to choice bias
+		% run Fisher's exact test on significant difference from expected proportions due to choice bias
 		Pnc_g_P = fexact( [ zeros(1,Pnc_g(conds(1),conds(1))) ones(1,Pnc_g(conds(2),conds(1))) zeros(1,Pnc_g(conds(1),conds(2))) ones(1,Pnc_g(conds(2),conds(2)))]',...
-			[zeros(1,Pnc_g(conds(1),conds(1))+Pnc_g(conds(2),conds(1))) ones(1,Pnc_g(conds(1),conds(2))+Pnc_g(conds(2),conds(2))) ]' );
+			              [ zeros(1,Pnc_g(conds(1),conds(1))+Pnc_g(conds(2),conds(1))) ones(1,Pnc_g(conds(1),conds(2))+Pnc_g(conds(2),conds(2))) ]' );
 
 		
 		for c = conds
@@ -403,14 +406,14 @@ if ~isempty(group_conditions),
 		subplot(n_rows,n_cols,17+2*(g-1))
 		pcolor([[Ppc_g nan(size(Ppc_g,1),1)] ; nan(1,size(Ppc_g,2)+1)]); set(gca,'Ydir','reverse','YTick',[1 2]+0.5,'YTickLabel',condition_labels(conds),'XTick',[1 2]+0.5,'XTickLabel',condition_labels(conds));
 		caxis([0 1]); colorbar;
-		title([group_condition_names(g) sprintf(' P(preceding|current) p(Fisher)=%.2f',Ppc_g_P)]);
+		title([group_condition_names(g) sprintf(' P(preceding|current) p_{Fisher}=%.2f',Ppc_g_P)]);
 		xlabel('preceding');
 		ylabel('current');
 		
 		subplot(n_rows,n_cols,17+2*(g-1)+1)
 		pcolor([[Pnc_g nan(size(Pnc_g,1),1)] ; nan(1,size(Pnc_g,2)+1)]); set(gca,'Ydir','reverse','YTick',[1 2]+0.5,'YTickLabel',condition_labels(conds),'XTick',[1 2]+0.5,'XTickLabel',condition_labels(conds));
 		caxis([0 1]); colorbar;
-		title([group_condition_names(g) sprintf(' P(next|current) p(Fisher)=%.2f',Pnc_g_P)]);
+		title([group_condition_names(g) sprintf(' P(next|current) p_{Fisher}=%.2f',Pnc_g_P)]);
 		xlabel('next');
 		ylabel('current');
 	end
