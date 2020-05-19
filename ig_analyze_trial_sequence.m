@@ -242,14 +242,14 @@ Pnc(:,conditions2exclude) = NaN;
 subplot(n_rows,n_cols,9)
 pcolor([[Ppc nan(size(Ppc,1),1)] ; nan(1,size(Ppc,2)+1)]); set(gca,'Ydir','reverse','YTick',all_conditions+0.5,'YTickLabel',condition_labels,'XTick',all_conditions+0.5,'XTickLabel',condition_labels, 'FontSize',8); 
 caxis([0 1]); colorbar;
-title('P(preceding|current)');
+title('P(pre|cur)');
 xlabel('preceding');
 ylabel('current');
 
 subplot(n_rows,n_cols,10)
 pcolor([[Pnc nan(size(Pnc,1),1)] ; nan(1,size(Pnc,2)+1)]); set(gca,'Ydir','reverse','YTick',all_conditions+0.5,'YTickLabel',condition_labels,'XTick',all_conditions+0.5,'XTickLabel',condition_labels, 'FontSize',8);
 caxis([0 1]); colorbar;
-title('P(next|current)');
+title('P(next|cur)');
 xlabel('next');
 ylabel('current');
 
