@@ -103,7 +103,7 @@ param.combine_condition_names	= {};
 param.conditions_compare_vs_LR	= [1 2]; % conditions to compare to preceeding/next L or R conditions
 param.group_LR			= {[1 3 5] [2 4 6]}; % two groups, one left and one right (can also include conditions_compare_vs_LR) 
 
-param.seq			= [2 1 3 4 5 6 1 2 2 3 4 5 6 1 3 4 1 2 2 3 4 2 6 2 1 2  2 1 3 4 5 6 1 2 2 3 4 5 6 1 3 4 1 2 2 3 4 2 6 2 1 2]; % 1 (L choice) is always preceeded by [2 4 6] (R)
+param.seq			= [2 1 3 4 5 6 1 2 2 3 4 5 6 1 3 4 1 2 2 3 4 2 6 2 1 2 1  2 1 3 4 5 6 1 2 2 3 4 5 6 1 3 4 1 2 2 3 4 2 6 2 1 2]; % 1 (L choice) is always preceeded by [2 4 6] (R)
 % param.seq			= [1 2 3 4 5 6 1 2 2 3 4 5 6 1 4 4 1 6 2 3 4 2 6 2 1 2  2 1 4 4 5 6 1 2 2 3 4 5 6 1 6 4 1 2 1 2 3 1 4 2 6 2 1 2]; % 1 (L choice) is always followed by [2 4 6] (R)
 % param.seq			= [1 2 1 2 3 4 5 4 2 2 1 2 1 2 1 2 1 2 3 4 4 5 2 3 4 5 5 2 3 1 2 1 2 1 2 1 2 3 1 2 1 2 2 3 3 3 3 3 1 2 1 2 1 2 6 6]; % 1 is always followed by 2
 % param.seq			= [1 2 1 2 3 4 5 4 2 2 1 2 1 2 1 2 1 2 3 4 4 5 2 3 4 5 5 2 3 0 1 2 1 2 1 2 1 2 3 1 2 1 2 2 3 3 3 3 3 1 2 1 2 1 2 6 6]; % 1 is always followed by 2, two runs
@@ -304,14 +304,14 @@ if ~isempty(conditions_compare_vs_LR),
 	subplot(n_rows,n_cols,11)
 	pcolor([[Ppc_LR nan(size(Ppc_LR,1),1)] ; nan(1,size(Ppc_LR,2)+1)]); set(gca,'Ydir','reverse','YTick',[1:n_conditions_compare_vs_LR]+0.5,'YTickLabel',condition_labels(conditions_compare_vs_LR),'XTick',[1 2]+0.5,'XTickLabel',{'L' 'R'}); 
 	caxis([0 1]); colorbar;
-	title(sprintf('P(preceding L/R|current) p_{Binom}=%s',mat2str(Ppc_LR_P,2)),'FontSize',9);
+	title(sprintf('P(pre L/R|cur) p_{Binom}=%s',mat2str(Ppc_LR_P,2)),'FontSize',9);
 	xlabel('preceding L/R');
 	ylabel('current');
 
 	subplot(n_rows,n_cols,12)
 	pcolor([[Pnc_LR nan(size(Pnc_LR,1),1)] ; nan(1,size(Pnc_LR,2)+1)]); set(gca,'Ydir','reverse','YTick',[1:n_conditions_compare_vs_LR]+0.5,'YTickLabel',condition_labels(conditions_compare_vs_LR),'XTick',[1 2]+0.5,'XTickLabel',{'L' 'R'}); 
 	caxis([0 1]); colorbar;
-	title(sprintf('P(next L/R|current) p_{Binom}=%s',mat2str(Pnc_LR_P,2)),'FontSize',9);
+	title(sprintf('P(next L/R|cur) p_{Binom}=%s',mat2str(Pnc_LR_P,2)),'FontSize',9);
 	xlabel('next L/R');
 	ylabel('current');
 	
@@ -424,3 +424,5 @@ out.Ppc = Ppc;
 out.Pnc = Pnc;
 out.Ppc_LR = Ppc_LR;
 out.Pnc_LR = Pnc_LR;
+out.Ppc_LR_P = Ppc_LR_P;
+out.Pnc_LR_P = Pnc_LR_P;
