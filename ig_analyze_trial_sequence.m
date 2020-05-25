@@ -322,7 +322,7 @@ else
 end
 
 
-% group conditions, compare conditions within each group
+% group conditions, compare conditions within each group (e.g. L vs R in each trial type)
 if ~isempty(group_conditions),
 	
 	if isempty(group_condition_names),
@@ -336,25 +336,38 @@ if ~isempty(group_conditions),
 		conds = group_conditions{g}; % should be two conditions (e.g. L and R)
 		
 		c1c2 = seq(seq==conds(1) | seq==conds(2) | isnan(seq)); % including NaNs separating runs
+        
+        seq_suc = seq;
+        seq_suc(seq~=conds(1) & seq~=conds(2)) = NaN;
+		clc2_suc = seq_suc(seq_suc==conds(1) | seq_suc==conds(2) | isnan(seq_suc)); % including NaNs separating runs AND all trials not belonging to the current group
+        
 		c1c2_= seq(seq==conds(1) | seq==conds(2)); % without NaNs
 		c1_n = length(find(seq==conds(1)));
 		c2_n = length(find(seq==conds(2)));
 		c2_prop = c2_n/(c1_n + c2_n);
 		
 		subplot(n_rows,n_cols,[13 14 15 16])
-		plot(c1c2_,'-','Color',mean(col(conds,:),1)); hold on;
+		plot(c1c2_,'-','Color',mean(col(conds,:),1)); hold on;     
 		plot(ig_running_average(c1c2_,hanning(10)),':','Color',mean(col(conds,:),1),'LineWidth',2);
 		line([1 length(c1c2_)],conds(1)+[c2_prop c2_prop],'LineStyle','--','Color',mean(col(conds,:),1));
 		text(length(c1c2_),conds(1)+c2_prop,sprintf('%s to %s: %.2f ', condition_labels{conds(2)}, condition_labels{conds(1)}, c2_prop ));
-		
+        
+        % plot only successive trials beloning to this group's conditions
+        cond_idx = find(seq==conds(1) | seq==conds(2));
+        non_succ_cond_idx = [1 find(diff(cond_idx)>1)+1];
+        c1c2__ = c1c2_; c1c2__(non_succ_cond_idx) = NaN;
+        plot(c1c2__,'.','Color',mean(col(conds,:),1)); hold on;   
+        
 		
 		% Probability analysis within each group
+        
+        % Initialize
 		[Ppc_g(1:n_cond,1:n_cond)] = zeros(n_cond,n_cond);
 		[Pnc_g(1:n_cond,1:n_cond)] = zeros(n_cond,n_cond);
+        [Ppc_g_suc(1:n_cond,1:n_cond)] = zeros(n_cond,n_cond);
+		[Pnc_g_suc(1:n_cond,1:n_cond)] = zeros(n_cond,n_cond);
 		
 		% probability of ***preceding*** conditions for each current condition
-		
-		
 		for k = 2:length(c1c2)
 			if ~isnan(c1c2(k)) && ~isnan(c1c2(k-1))
 				Ppc_g(c1c2(k),c1c2(k-1)) = Ppc_g(c1c2(k),c1c2(k-1)) + 1;
@@ -365,11 +378,25 @@ if ~isempty(group_conditions),
 		Ppc_g_P = fexact( [ zeros(1,Ppc_g(conds(1),conds(1))) ones(1,Ppc_g(conds(2),conds(1))) zeros(1,Ppc_g(conds(1),conds(2))) ones(1,Ppc_g(conds(2),conds(2)))]',...
                           [ zeros(1,Ppc_g(conds(1),conds(1))+Ppc_g(conds(2),conds(1))) ones(1,Ppc_g(conds(1),conds(2))+Ppc_g(conds(2),conds(2))) ]' );
 
-		
 		for c = conds
 			Ppc_g(c,:) = Ppc_g(c,:)/sum(Ppc_g(c,:));
+        end
+		
+        % now only for successive trials
+        for k = 2:length(clc2_suc)
+			if ~isnan(clc2_suc(k)) && ~isnan(clc2_suc(k-1))
+				Ppc_g_suc(clc2_suc(k),clc2_suc(k-1)) = Ppc_g_suc(clc2_suc(k),clc2_suc(k-1)) + 1;
+			end
 		end
 		
+		% run Fisher's exact test on significant difference from expected proportions due to choice bias
+		Ppc_g_P_suc = fexact( [ zeros(1,Ppc_g_suc(conds(1),conds(1))) ones(1,Ppc_g_suc(conds(2),conds(1))) zeros(1,Ppc_g_suc(conds(1),conds(2))) ones(1,Ppc_g_suc(conds(2),conds(2)))]',...
+                          [ zeros(1,Ppc_g_suc(conds(1),conds(1))+Ppc_g_suc(conds(2),conds(1))) ones(1,Ppc_g_suc(conds(1),conds(2))+Ppc_g_suc(conds(2),conds(2))) ]' );
+		
+		for c = conds
+			Ppc_g_suc(c,:) = Ppc_g_suc(c,:)/sum(Ppc_g_suc(c,:));
+        end
+        
 		
 		% probability of ***next*** condition given current condition
 		for k = 1:length(c1c2)-1
@@ -382,25 +409,45 @@ if ~isempty(group_conditions),
 		Pnc_g_P = fexact( [ zeros(1,Pnc_g(conds(1),conds(1))) ones(1,Pnc_g(conds(2),conds(1))) zeros(1,Pnc_g(conds(1),conds(2))) ones(1,Pnc_g(conds(2),conds(2)))]',...
 			              [ zeros(1,Pnc_g(conds(1),conds(1))+Pnc_g(conds(2),conds(1))) ones(1,Pnc_g(conds(1),conds(2))+Pnc_g(conds(2),conds(2))) ]' );
 
-		
 		for c = conds
 			Pnc_g(c,:) = Pnc_g(c,:)/sum(Pnc_g(c,:));
+        end
+        
+        % now only for successive trials
+		for k = 1:length(clc2_suc)-1
+			if ~isnan(clc2_suc(k)) && ~isnan(clc2_suc(k+1))
+				Pnc_g_suc(clc2_suc(k),clc2_suc(k+1)) = Pnc_g_suc(clc2_suc(k),clc2_suc(k+1)) + 1;
+			end
 		end
+		
+		% run Fisher's exact test on significant difference from expected proportions due to choice bias
+		Pnc_g_P_suc = fexact( [ zeros(1,Pnc_g_suc(conds(1),conds(1))) ones(1,Pnc_g_suc(conds(2),conds(1))) zeros(1,Pnc_g_suc(conds(1),conds(2))) ones(1,Pnc_g_suc(conds(2),conds(2)))]',...
+			              [ zeros(1,Pnc_g_suc(conds(1),conds(1))+Pnc_g_suc(conds(2),conds(1))) ones(1,Pnc_g_suc(conds(1),conds(2))+Pnc_g_suc(conds(2),conds(2))) ]' );
+
+		for c = conds
+			Pnc_g_suc(c,:) = Pnc_g_suc(c,:)/sum(Pnc_g_suc(c,:));
+        end
+        
 		
 		Ppc_g = Ppc_g(conds,conds);
 		Pnc_g = Pnc_g(conds,conds);
-			
+        Ppc_g_suc = Ppc_g_suc(conds,conds);
+		Pnc_g_suc = Pnc_g_suc(conds,conds);
 		
 		out.group_conditions(g).group_conditions	= group_conditions;
 		out.group_conditions(g).group_condition_names	= group_condition_names(g);
 		
 		out.group_conditions(g).Ppc_g = Ppc_g;
 		out.group_conditions(g).Pnc_g = Pnc_g;
+        out.group_conditions(g).Ppc_g_suc = Ppc_g_suc;
+		out.group_conditions(g).Pnc_g_suc = Pnc_g_suc;
 		
 		out.group_conditions(g).c2_prop = c2_prop;
 		
 		out.group_conditions(g).Ppc_g_P = Ppc_g_P;
 		out.group_conditions(g).Pnc_g_P = Pnc_g_P;
+        out.group_conditions(g).Ppc_g_P_suc = Ppc_g_P_suc;
+		out.group_conditions(g).Pnc_g_P_suc = Pnc_g_P_suc;
 		
 
 		subplot(n_rows,n_cols,17+2*(g-1))
@@ -410,12 +457,22 @@ if ~isempty(group_conditions),
 		xlabel('preceding');
 		ylabel('current');
 		
-		subplot(n_rows,n_cols,17+2*(g-1)+1)
+        subplot(n_rows,n_cols,17+2*(g-1)+1)
+        if 0, % Note: P(next|cur) is nearly always very close to P(pre|cur), so omit plotting this
 		pcolor([[Pnc_g nan(size(Pnc_g,1),1)] ; nan(1,size(Pnc_g,2)+1)]); set(gca,'Ydir','reverse','YTick',[1 2]+0.5,'YTickLabel',condition_labels(conds),'XTick',[1 2]+0.5,'XTickLabel',condition_labels(conds));
 		caxis([0 1]); colorbar;
 		title([group_condition_names(g) sprintf(' P(next|current) p_{Fisher}=%.2f',Pnc_g_P)]);
 		xlabel('next');
 		ylabel('current');
+        else % plot P(pre|cur) for the successive trials only
+        pcolor([[Ppc_g_suc nan(size(Ppc_g_suc,1),1)] ; nan(1,size(Ppc_g_suc,2)+1)]); set(gca,'Ydir','reverse','YTick',[1 2]+0.5,'YTickLabel',condition_labels(conds),'XTick',[1 2]+0.5,'XTickLabel',condition_labels(conds));
+		caxis([0 1]); colorbar;
+		title([group_condition_names(g) sprintf(' P(pre|cur suc. pairs) p_{Fisher}=%.2f',Ppc_g_P_suc)]);
+		xlabel('preceding');
+		ylabel('current');  
+        end
+            
+    
 	end
 end
 
