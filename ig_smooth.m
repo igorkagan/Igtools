@@ -1,4 +1,4 @@
-function [out1,out2] = ig_smooth(in1,in2,in3);
+function [out1,out2] = ig_smooth(in1,in2,in3)
 %IG_SMOOTH		- smooth signal by convolving with Gaussian bell
 %--------------------------------------------------------------------------------
 % Input(s): 	in1 - signal
