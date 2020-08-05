@@ -27,6 +27,15 @@ idx_down = find(diff(x>t2)<0)+1; % down crossings
 % make sure we start with idx_up and finish with idx_down in each pair
 if ~isempty(idx_up) && ~isempty(idx_down),
 	idx_down = idx_down(find(idx_down > idx_up(1)));
+    
+    %%%%%%% PN added start
+    if isempty(idx_down) % otherwise dimensionality errors of empty matrices cause errors (empty 1x0 matrix vs. empty 0x0 matrix)
+        idx_up = [];
+        idx_down = [];
+    end
+    %%%%%%% PN added end
+    
+    
 % 	if length(idx_up) > length(idx_down), % commented out on 20200130 - not  needed, introduced missed crossings
 % 		idx_up =idx_up(1:end-1);
 % 	end
