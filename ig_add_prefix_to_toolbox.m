@@ -1,7 +1,8 @@
 function ig_add_prefix_to_toolbox(toolbox_path, prefix, pattern2take, pattern2avoid)
 %IG_ADD_PREFIX_TO_TOOLBOX		- add prefix to all instances of functions in the toolbox, in file names and code
 % Example: ig_add_prefix_to_toolbox('D:\Sources\MATLAB\bv - Copy', 'bv_', '*.m', 'bvqxt_'); % add bv_ but exclude functions with bvqxt_
-% recursive function
+% If in some functions the prefix already exists, the second one is not added
+% It is a recursive function
 
 if nargin < 3,
     pattern2take = '*.m';
