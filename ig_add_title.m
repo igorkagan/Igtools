@@ -7,7 +7,15 @@ end
 
 old_str = get(get(gca,'Title'),'String');
 if add_to_front
-	title([str old_str],varargin{:});
+    if size(old_str,1) > 1
+        title(char(str,old_str),varargin{:});
+    else
+        title([str old_str],varargin{:});
+    end
 else
-	title([old_str str],varargin{:});
+    if size(old_str,1) > 1
+        title(char(old_str,str),varargin{:});
+    else
+        title([old_str str],varargin{:});
+    end
 end
