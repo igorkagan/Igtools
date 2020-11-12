@@ -8,13 +8,13 @@ end
 old_str = get(get(gca,'Title'),'String');
 if add_to_front
     if size(old_str,1) > 1
-        title(char(str,old_str),varargin{:});
+        title(char(char(str),char(old_str)),varargin{:});
     else
         title([str old_str],varargin{:});
     end
 else
     if size(old_str,1) > 1
-        title(char(old_str,str),varargin{:});
+        title(char(char(old_str),char(str)),varargin{:});
     else
         title([old_str str],varargin{:});
     end
