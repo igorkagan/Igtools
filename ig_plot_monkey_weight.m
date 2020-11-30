@@ -29,7 +29,7 @@ notFirstDayAfterBreak_idx = setdiff(1:N_days,firstDayAfterBreak_idx);
 figure;
 plot(Nday,w,'k-'); hold on;
 plot(Nday,w,'g.'); hold on;
-plot(Nday(firstDayAfterBreak_idx),w(firstDayAfterBreak_idx),'r.'); hold on;
+% plot(Nday(firstDayAfterBreak_idx),w(firstDayAfterBreak_idx),'r.'); hold on;
 ig_add_multiple_vertical_lines(new_year - Nday_start,'Color',[0.4 0.4 0.4],'LineStyle','--');
 
 runave                          = ig_running_average(w,30);
