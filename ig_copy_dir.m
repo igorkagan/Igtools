@@ -1,10 +1,10 @@
-function ig_copy_dir(fromdir,todir,do_not_ig_copy_dirs,avoid,verbose)
+function ig_copy_dir(fromdir,todir,do_not_copy_dirs,avoid,verbose)
 %IG_COPY_DIR		- copy all files in directory "fromdir" to directory "todir" except avoid
 % ig_copy_dir('Z:\MRI\Curius\20141017','Y:\MRI\Curius\20141017',1,'.zip')
 
 
 if nargin < 3,
-	do_not_ig_copy_dirs = 0;
+	do_not_copy_dirs = 0;
 end
 
 if nargin < 4,
@@ -17,7 +17,7 @@ end
 
 
 if ~(exist(todir)==7),
-	todir_lastslash_idx = findstr(todir,filesep);
+	todir_lastslash_idx = strfind(todir,filesep);
 	if isempty(todir_lastslash_idx),
 		parent_todir = '.';
 		new_todir = todir;
@@ -41,7 +41,7 @@ d = dir;
 n = 0;
 for i=3:size(d,1),
 	
-	if ~(d(i).isdir && do_not_ig_copy_dirs) && isempty(strfind(d(i).name,avoid)),
+	if ~(d(i).isdir && do_not_copy_dirs) && isempty(strfind(d(i).name,avoid)),
 		tic;
 		copyfile(d(i).name,[todir filesep d(i).name]);
 		n = n + 1;
