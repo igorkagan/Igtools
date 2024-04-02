@@ -107,6 +107,8 @@ if (ncol>length(colorbrewer.(ctype).(cname)))
     cbrew_init=colorbrewer.(ctype).(cname){length(colorbrewer.(ctype).(cname))};
     colormap=interpolate_cbrewer(cbrew_init, interp_method, ncol);
     colormap=colormap./255;
+    colormap = max(0,colormap); % IK 2024, for MATLAB2020
+    colormap = min(1,colormap); % IK 2024, for MATLAB2020
     return
 end
 
@@ -124,5 +126,6 @@ if (isempty(colorbrewer.(ctype).(cname){ncol}))
 end
 
 colormap=(colorbrewer.(ctype).(cname){ncol})./255;
+
 
 end

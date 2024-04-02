@@ -1,5 +1,6 @@
 function [hp1 hp2] = ig_errorband(x,y,e,type,varargin)
 %IG_ERRORBAND		- errorband plot
+% ig_errorband(1:100,rand(1,100),randn(1,100)/5,0,'LineWidth',2,'Color',[0 0 1])
 
 if nargin < 4,
         type = 0; % 0-patch, 1-line, 2-errorbar
