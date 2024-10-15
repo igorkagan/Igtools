@@ -2,9 +2,8 @@ function ig_set_caxis_equal_lim(h)
 %IG_SET_CAXIS_EQUAL_LIM		- set CAXIS equal (min max of all)
 %--------------------------------------------------------------------------------
 % Input(s): 	h - set of handlers
-%               MODE - 'Xlim' or 'Ylim'
 % Output(s):	none
-% Usage:	set_axes_equal_lim(h,'Ylim')
+% Usage:	ig_set_caxis_equal_lim(h)
 
 %
 % Last modified 11.12.02
